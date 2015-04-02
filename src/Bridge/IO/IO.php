@@ -1,6 +1,6 @@
 <?php
 
-namespace Up\Bridge\IO;
+namespace Mothership\Up\Bridge\IO;
 
 use Composer\IO\NullIO;
 
@@ -11,4 +11,15 @@ use Composer\IO\NullIO;
  * we may wish to throw some exceptions based on in/output.
  */
 class IO extends NullIO
-{}
+{
+	public function writeError($error, $newline = true)
+	{
+		// strip <info> tags etc
+		$error = preg_replace_callback('/<\/?error>/', function($matches) {
+			foreach ($matches as $match) {
+				throw new \Up\Exception\ComposerException($error);
+			}
+		}, $error);
+
+	}	
+}

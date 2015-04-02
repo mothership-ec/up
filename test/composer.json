@@ -1,5 +1,5 @@
 {
-	"description": "A composer library for self-updating projects",
+	"description": "A test composer file",
 	"homepage": "http://mothership.ec",
 	"authors": [
 		{
@@ -12,10 +12,5 @@
 	},
 	"require-dev": {
 		"phpunit/phpunit": "~4.5"
-	},
-	"autoload": {
-		"psr-4": {
-			"Mothership\\Up\\"  : "src"
-		}
 	}
 }
