@@ -11,30 +11,59 @@ class UpTest extends \PHPUnit_Framework_TestCase
 		chdir(__DIR__);
 	}
 
-	public function testUp()
+	public function tearDown()
 	{
-		$up = new Up;
+		$vendorRoot = __DIR__ . '/testroot/vendor';
+		if (is_dir($vendorRoot)) {
+			$this->rrmdir($vendorRoot);
+		}
 
-		$this->assertEquals($up->update(), 0);
-		
-		$this->assertTrue(is_dir(__DIR__ . '/vendor'));
-		if (is_dir(__DIR__ . '/vendor')) {
-			$this->rrmdir(__DIR__ . '/vendor');
+		$vendorRoot = __DIR__ . '/vendor';
+		if (is_dir($vendorRoot)) {
+			$this->rrmdir($vendorRoot);
 		}
 	}
 
-	public function testInstall()
+	// public function testUp()
+	// {
+	// 	$up = new Up;
+	// 	$this->assertEquals($up->update(), 0);
+	// }
+
+	// public function testInstall()
+	// {
+	// 	$up = new Up;
+
+	// 	$this->assertEquals($up->install(), 0);
+		
+	// }
+
+	public function testInstallBase()
 	{
+		$vendorRoot = __DIR__ . '/testroot';
 		$up = new Up;
+		$up->setBaseDir($vendorRoot);
 
 		$this->assertEquals($up->install(), 0);
 		
-		$this->assertTrue(is_dir(__DIR__ . '/vendor'));
-		if (is_dir(__DIR__ . '/vendor')) {
-			$this->rrmdir(__DIR__ . '/vendor');
-		}
+		$this->assertTrue(is_dir($vendorRoot . '/vendor'));
+		$this->assertTrue(is_dir($vendorRoot));
 	}
 
+	// public function testInstallVendor()
+	// {
+	// 	$vendorRoot = __DIR__ . '/testroot2/vendor';
+	// 	$up = new Up;
+	// 	$up->setVendorDir($vendorRoot);
+
+	// 	$this->assertEquals($up->install(), 0);
+		
+	// 	$this->assertTrue(is_dir($vendorRoot));
+	// }
+
+	/**
+	 * Recursively remove a directory - used to remove vendor
+	 */
 	private function rrmdir($dir) { 
 		if (is_dir($dir)) { 
 			$objects = scandir($dir); 

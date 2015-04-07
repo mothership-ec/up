@@ -5,6 +5,7 @@ namespace Mothership\Up;
 use Composer\Composer;
 use Composer\Factory;
 use Composer\Installer;
+use Composer\Config;
 
 /**
  * @author Sam Trangmar-Keates samtkeates@gmail.com
@@ -14,13 +15,6 @@ use Composer\Installer;
 class Up
 {
 	/**
-	 * Composer instance
-	 * 
-	 * @var Composer
-	 */
-	protected $_composer;
-
-	/**
 	 * An IOInterface for composer
 	 * 
 	 * @var \Composer\IO\IOInterface
@@ -28,12 +22,33 @@ class Up
 	protected $_io;
 
 	/**
+	 * Composer Factory
+	 * 
+	 * @var Factory
+	 */
+	private $_factory;
+
+	/**
 	 * The root directory
+	 * 
 	 * @var string
 	 */
-	private $_root;
+	protected $_root = null;
 
-	private $_options = [
+	/**
+	 * Composer instance used
+	 * 
+	 * @var the composer instance
+	 */
+	private $_composer;
+
+	/**
+	 * The installer options, these are set on the installer
+	 * after instansiation.
+	 * 
+	 * @var array
+	 */
+	private $_installerOptions = [
 		'dry-run'              => false,
 		'prefer-source'        => false,
 		'prefer-dist'          => true,
@@ -48,13 +63,22 @@ class Up
 
 	public function __construct()
 	{
-		$this->_io = new Bridge\IO\IO;
-		$this->_composer = Factory::create($this->_io, null, false);
+		$this->_root     = getcwd();
+		$this->_io       = new Bridge\IO\IO;
+		$this->_factory  = new Factory;
 	}
 
-	public function setComposerRoot($root)
+	/**
+	 * Sets the base directory in which to run
+	 */
+	public function setBaseDir($path)
 	{
-		$this->_root = $root;
+		if (!is_dir($this->_root)) {
+			throw new \LogicException($path . ' is not a valid directory! Cannot use as root');
+		}
+		$this->_root = $path;
+
+		return $this;
 	}
 
 	/**
@@ -62,6 +86,7 @@ class Up
 	 */
 	public function update()
 	{
+		$this->_composer = $this->createComposer();
 		$install = Installer::create($this->_io, $this->_composer);
 		
 		$this->_setInstallerOptions($install);
@@ -75,6 +100,7 @@ class Up
 	 */
 	public function install()
 	{
+		$this->_composer = $this->createComposer();
 		$install = Installer::create($this->_io, $this->_composer);
 		
 		$this->_setInstallerOptions($install);
@@ -83,22 +109,32 @@ class Up
 		return $install->run();
 	}
 
+	/**
+	 * Get a composer instance.
+	 * 
+	 * @return Composer
+	 */
+	public function createComposer()
+	{
+		return $this->_factory->createComposer($this->_io, null, false, $this->_root);
+	}
+	
 	protected function _setInstallerOptions($install)
 	{
 		$install
-			->setDryRun($this->_options['dry-run'])
+			->setDryRun($this->_installerOptions['dry-run'])
 			->setVerbose(false)
-			->setPreferSource($this->_options['prefer-source'])
-			->setPreferDist($this->_options['prefer-dist'])
-			->setDevMode($this->_options['dev-mode'])
-			->setDumpAutoloader($this->_options['dump-autoloader'])
-			->setRunScripts($this->_options['run-scripts'])
-			->setOptimizeAutoloader($this->_options['optimize-autoloader'])
+			->setPreferSource($this->_installerOptions['prefer-source'])
+			->setPreferDist($this->_installerOptions['prefer-dist'])
+			->setDevMode($this->_installerOptions['dev-mode'])
+			->setDumpAutoloader($this->_installerOptions['dump-autoloader'])
+			->setRunScripts($this->_installerOptions['run-scripts'])
+			->setOptimizeAutoloader($this->_installerOptions['optimize-autoloader'])
 			->setUpdateWhitelist([])
 			->setWhitelistDependencies(false)
-			->setIgnorePlatformRequirements($this->_options['ignore-platform-reqs'])
-			->setPreferStable($this->_options['prefer-stable'])
-			->setPreferLowest($this->_options['prefer-lowest'])
+			->setIgnorePlatformRequirements($this->_installerOptions['ignore-platform-reqs'])
+			->setPreferStable($this->_installerOptions['prefer-stable'])
+			->setPreferLowest($this->_installerOptions['prefer-lowest'])
 		;
-	} 
+	}
 }
