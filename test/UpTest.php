@@ -50,17 +50,6 @@ class UpTest extends \PHPUnit_Framework_TestCase
 		$this->assertTrue(is_dir($vendorRoot));
 	}
 
-	public function testInstallVendor()
-	{
-		$vendorRoot = __DIR__ . '/testroot2/vendor';
-		$up = new Up;
-		$up->setVendorDir($vendorRoot);
-
-		$this->assertEquals($up->install(), 0);
-		
-		$this->assertTrue(is_dir($vendorRoot));
-	}
-
 	/**
 	 * Recursively remove a directory - used to remove vendor
 	 */
