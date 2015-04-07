@@ -1,1 +1,1 @@
-## Composer Updater PHP thingy
+## Composer Up library
