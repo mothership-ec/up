@@ -6,6 +6,7 @@ use Composer\Composer;
 use Composer\Factory;
 use Composer\Installer;
 use Composer\Config;
+use Composer\Command\CreateProjectCommand;
 
 /**
  * @author Sam Trangmar-Keates samtkeates@gmail.com
@@ -107,6 +108,39 @@ class Up
 		$install->setUpdate(false);
 
 		return $install->run();
+	}
+
+	/**
+	 * Create a project from repo
+	 */
+	public function createProject($package)
+	{
+		$projectCreator = new CreateProjectCommand;
+		$composer = $this->createComposer();
+		$input = new \Symfony\Component\Console\Input\ArrayInput([
+			'prefer-source' => $this->_installerOptions['prefer-source'],
+			'prefer-dist'   => $this->_installerOptions['prefer-dist'],
+		]);
+
+		$projectCreator->installProject(
+			$this->_io,
+			$this->_factory->createConfig($this->_io, $this->_root),
+			$package,
+			null,
+			null,
+			'stable',
+			false,
+			false,
+			false,
+			null,
+			false,
+			false,
+			false,
+			false,
+			false,
+			false,
+			$input // this sucks balls
+		);
 	}
 
 	/**
