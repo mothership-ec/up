@@ -7,6 +7,10 @@ use Composer\Factory;
 use Composer\Installer;
 use Composer\Config;
 use Composer\Command\CreateProjectCommand;
+use Symfony\Component\Console\Input\InputDefinition as SymfonyInputDefinition;
+use Symfony\Component\Console\Input\ArrayInput as SymfonyInput;
+use Symfony\Component\Console\Input\InputArgument as SymfonyInputArgument;
+use Symfony\Component\Console\Input\InputOption as SymfonyInputOption;
 
 /**
  * @author Sam Trangmar-Keates samtkeates@gmail.com
@@ -71,6 +75,8 @@ class Up
 
 	/**
 	 * Sets the base directory in which to run
+	 * 
+	 * @param string the path in which to run commands
 	 */
 	public function setBaseDir($path)
 	{
@@ -93,7 +99,13 @@ class Up
 		$this->_setInstallerOptions($install);
 		$install->setUpdate(true);
 
-		return $install->run();
+		$result = $install->run();
+
+		if ($result !== 0) {
+			throw new Exception\ComposerException('Composer update failed: ' . $this->_io->getLastError());
+		}
+
+		return $result;
 	}
 
 	/**
@@ -107,26 +119,37 @@ class Up
 		$this->_setInstallerOptions($install);
 		$install->setUpdate(false);
 
-		return $install->run();
+		$result = $install->run();
+
+		if ($result !== 0) {
+			throw new Exception\ComposerException('Composer install failed: ' . $this->_io->getLastError());
+		}
+
+		return $result;
 	}
 
 	/**
-	 * Create a project from repo
+	 * Create a project from repo.
+	 * 
+	 * @param string the package to install
 	 */
 	public function createProject($package)
 	{
 		$projectCreator = new CreateProjectCommand;
 		$composer = $this->createComposer();
-		$input = new \Symfony\Component\Console\Input\ArrayInput([
-			'prefer-source' => $this->_installerOptions['prefer-source'],
-			'prefer-dist'   => $this->_installerOptions['prefer-dist'],
-		]);
 
-		$projectCreator->installProject(
+		$input = new SymfonyInput([
+				'--prefer-source' => $this->_installerOptions['prefer-source'],
+				'--prefer-dist'   => $this->_installerOptions['prefer-dist'],
+			],
+			$projectCreator->getDefinition()
+		);
+
+		$result = $projectCreator->installProject(
 			$this->_io,
 			$this->_factory->createConfig($this->_io, $this->_root),
 			$package,
-			null,
+			$this->_root,
 			null,
 			'stable',
 			false,
@@ -139,8 +162,14 @@ class Up
 			false,
 			false,
 			false,
-			$input // this sucks balls
+			$input
 		);
+
+		if ($result !== 0) {
+			throw new Exception\ComposerException('Composer failed to create project ' . $package . ': ' . $this->_io->getLastError());
+		}
+
+		return $result;
 	}
 
 	/**

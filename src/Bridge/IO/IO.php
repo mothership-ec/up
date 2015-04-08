@@ -12,14 +12,51 @@ use Composer\IO\NullIO;
  */
 class IO extends NullIO
 {
+	private $_errorLog = [];
+
 	public function writeError($error, $newline = true)
 	{
+		$log = false;
 		// strip <info> tags etc
-		$error = preg_replace_callback('/<\/?error>/', function($matches) {
-			foreach ($matches as $match) {
-				throw new \Up\Exception\ComposerException($error);
+		$error = preg_replace_callback('/<\/?error>/', function($matches) use (&$log) {
+			if (!empty($matches)) {
+				$log = true;
 			}
-		}, $error);
 
+			return '';
+		}, $error);
+		
+		if ($log) {
+			$this->_errorLog[] = $error;
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * returns false to prevent any prompts.
+	 */
+	public function isInteractive()
+	{
+		return false;
+	}
+
+	/**
+	 * Get the error array
+	 */
+	public function getErrors()
+	{
+		return $this->_errorLog;
+	}
+
+	/**
+	 * Gets the last error
+	 */
+	public function getLastError()
+	{
+		$err = end($this->_errorLog);
+		reset($this->_errorLog);
+
+		return $err;
 	}	
 }
