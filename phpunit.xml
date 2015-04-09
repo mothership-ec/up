@@ -8,6 +8,19 @@
 	convertWarningsToExceptions="true"
 	stopOnFailure="false"
 	strict="false"
-	bootstrap="test/bootstrap.php"
+	bootstrap="tests/bootstrap.php"
 	>
+    <testsuites>
+        <testsuite name="Up">
+            <directory>./tests/</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist>
+            <exclude>
+                <directory>./vendor</directory>
+                <directory>./tests</directory>
+            </exclude>
+        </whitelist>
+    </filter>
 </phpunit>
