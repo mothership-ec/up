@@ -64,6 +64,7 @@ class Up
 		'ignore-platform-reqs' => false,
 		'prefer-stable'        => true,
 		'prefer-lowest'        => false,
+		'verbose'
 	];
 
 	public function __construct()
@@ -136,7 +137,6 @@ class Up
 	public function createProject($package)
 	{
 		$projectCreator = new CreateProjectCommand;
-		$composer = $this->createComposer();
 
 		$input = new SymfonyInput([
 				'--prefer-source' => $this->_installerOptions['prefer-source'],
