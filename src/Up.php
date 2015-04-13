@@ -7,10 +7,7 @@ use Composer\Factory;
 use Composer\Installer;
 use Composer\Config;
 use Composer\Command\CreateProjectCommand;
-use Symfony\Component\Console\Input\InputDefinition as SymfonyInputDefinition;
 use Symfony\Component\Console\Input\ArrayInput as SymfonyInput;
-use Symfony\Component\Console\Input\InputArgument as SymfonyInputArgument;
-use Symfony\Component\Console\Input\InputOption as SymfonyInputOption;
 
 /**
  * @author Sam Trangmar-Keates samtkeates@gmail.com
@@ -77,7 +74,10 @@ class Up
 	/**
 	 * Sets the base directory in which to run
 	 * 
-	 * @param string the path in which to run commands
+	 * @param string $path       The path in which to run commands
+	 * @throws \LogicException   Throws exception if path is not a valid directory
+	 *
+	 * @return Up
 	 */
 	public function setBaseDir($path)
 	{
@@ -132,7 +132,9 @@ class Up
 	/**
 	 * Create a project from repo.
 	 * 
-	 * @param string the package to install
+	 * @param string $package       The package to install
+	 *
+	 * @return int
 	 */
 	public function createProject($package)
 	{
@@ -181,7 +183,10 @@ class Up
 	{
 		return $this->_factory->createComposer($this->_io, null, false, $this->_root);
 	}
-	
+
+	/**
+	 * @param Installer $install
+	 */
 	protected function _setInstallerOptions($install)
 	{
 		$install
