@@ -40,7 +40,7 @@ class Up
 	/**
 	 * Composer instance used
 	 * 
-	 * @var the composer instance
+	 * @var Composer
 	 */
 	private $_composer;
 
