@@ -61,7 +61,6 @@ class Up
 		'ignore-platform-reqs' => false,
 		'prefer-stable'        => true,
 		'prefer-lowest'        => false,
-		'verbose'
 	];
 
 	public function __construct()
