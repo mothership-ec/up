@@ -64,7 +64,7 @@ class UpTest extends \PHPUnit_Framework_TestCase
 		$up = new Up;
 
 		$result = $up
-			->setBaseDir($projectRoot)
+			->setBaseDir($projectRoot . '/mothership')
 			->createProject('mothership-ec/mothership')
 		;
 
