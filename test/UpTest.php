@@ -40,7 +40,6 @@ class UpTest extends \PHPUnit_Framework_TestCase
 		$up = new Up;
 
 		$this->assertEquals($up->install(), 0);
-		
 	}
 
 	public function testInstallBase()
@@ -58,6 +57,9 @@ class UpTest extends \PHPUnit_Framework_TestCase
 	public function testCreateProject()
 	{
 		$projectRoot = __DIR__ . '/testproject';
+		mkdir($projectRoot);
+		$oldDir = getcwd();
+		chdir($projectRoot);
 
 		$up = new Up;
 
@@ -68,8 +70,8 @@ class UpTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertEquals($result, 0);
 		
-		$this->assertTrue(is_dir($projectRoot));
-		$this->assertTrue(is_dir($projectRoot . '/vendor'));
+		$this->assertTrue(is_dir($projectRoot . '/mothership'));
+		$this->assertTrue(is_dir($projectRoot . '/mothership/vendor'));
 	}
 
 	/**
