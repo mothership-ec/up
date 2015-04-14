@@ -1,21 +1,31 @@
 {
-	"description": "A composer library for self-updating projects",
-	"homepage": "http://mothership.ec",
-	"authors": [
-		{
-			"name" : "The Mothership development team",
-			"email": "dev@message.co.uk"
-		}
-	],
-	"require": {
-		"composer/composer"  : "dev-master#4d134ce8a2aacb9566fee8deb8c514248fd2a983"
-	},
-	"require-dev": {
-		"phpunit/phpunit": "~4.5"
-	},
-	"autoload": {
-		"psr-4": {
-			"Mothership\\Up\\"  : "src"
-		}
+  "name": "mothership-ec/up",
+  "description": "Up! A composer library for self-updating projects",
+  "keywords": [
+	"composer",
+	"update",
+	"installer"
+  ],
+  "homepage": "http://mothership.ec",
+  "authors": [
+	{
+	  "name": "The Mothership Development Team",
+	  "email": "dev@mothership.ec"
 	}
+  ],
+  "support": {
+	"issues": "http://github.com/mothership-ec/up/issues"
+  },
+  "require": {
+	"mothership-ec/composer": "~1.0"
+  },
+  "require-dev": {
+	"phpunit/phpunit": "~4.5"
+  },
+  "autoload": {
+	"psr-4": {
+	  "Mothership\\Up\\": "src",
+	  "Mothership\\Up\\Test\\": "tests"
+	}
+  }
 }
