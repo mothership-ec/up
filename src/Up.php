@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\ArrayInput as SymfonyInput;
 /**
  * @author Sam Trangmar-Keates samtkeates@gmail.com
  * 
- * This it the main class to be instansiated when running updates
+ * This it the main class to be instanciated when running updates
  */
 class Up
 {
@@ -46,7 +46,7 @@ class Up
 
 	/**
 	 * The installer options, these are set on the installer
-	 * after instansiation.
+	 * after instanciation.
 	 * 
 	 * @var array
 	 */
