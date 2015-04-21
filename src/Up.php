@@ -105,7 +105,7 @@ class Up
 			throw new Exception\ComposerException('Composer update failed: ' . $this->_io->getLastError());
 		}
 
-		return $result;
+		return $this;
 	}
 
 	/**
@@ -125,7 +125,7 @@ class Up
 			throw new Exception\ComposerException('Composer install failed: ' . $this->_io->getLastError());
 		}
 
-		return $result;
+		return $this;
 	}
 
 	/**
@@ -170,7 +170,7 @@ class Up
 			throw new Exception\ComposerException('Composer failed to create project ' . $package . ': ' . $this->_io->getLastError());
 		}
 
-		return $result;
+		return $this;
 	}
 
 	/**
