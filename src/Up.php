@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\ArrayInput as SymfonyInput;
 /**
  * @author Sam Trangmar-Keates samtkeates@gmail.com
  * 
- * This it the main class to be instansiated when running updates
+ * This it the main class to be instanciated when running updates
  */
 class Up
 {
@@ -46,7 +46,7 @@ class Up
 
 	/**
 	 * The installer options, these are set on the installer
-	 * after instansiation.
+	 * after instanciation.
 	 * 
 	 * @var array
 	 */
@@ -61,7 +61,6 @@ class Up
 		'ignore-platform-reqs' => false,
 		'prefer-stable'        => true,
 		'prefer-lowest'        => false,
-		'verbose'
 	];
 
 	public function __construct()
@@ -106,7 +105,7 @@ class Up
 			throw new Exception\ComposerException('Composer update failed: ' . $this->_io->getLastError());
 		}
 
-		return $result;
+		return $this;
 	}
 
 	/**
@@ -126,7 +125,7 @@ class Up
 			throw new Exception\ComposerException('Composer install failed: ' . $this->_io->getLastError());
 		}
 
-		return $result;
+		return $this;
 	}
 
 	/**
@@ -171,7 +170,7 @@ class Up
 			throw new Exception\ComposerException('Composer failed to create project ' . $package . ': ' . $this->_io->getLastError());
 		}
 
-		return $result;
+		return $this;
 	}
 
 	/**
