@@ -7,6 +7,7 @@
 	"installer"
   ],
   "homepage": "http://mothership.ec",
+  "license": "GPL-3.0+",
   "authors": [
 	{
 	  "name": "The Mothership Development Team",
