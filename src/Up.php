@@ -38,13 +38,6 @@ class Up
 	protected $_root = null;
 
 	/**
-	 * Composer instance used
-	 * 
-	 * @var Composer
-	 */
-	private $_composer;
-
-	/**
 	 * The installer options, these are set on the installer
 	 * after instanciation.
 	 * 
@@ -93,23 +86,17 @@ class Up
 	 */
 	public function update()
 	{
-		$composer = $this->createComposer();
-		$io = $this->_io;
+		$installer = $this->_getInstaller(true);
 
-		$function = $this->_wrap(function () use ($composer, $io) {
-			$install = Installer::create($io, $composer);
-
-			$this->_setInstallerOptions($install);
-			$install->setUpdate(true);
-
-			$result = $install->run();
-
-			if ($result !== 0) {
-				throw new Exception\ComposerException('Composer update failed: ' . $this->_io->getLastError());
-			}
+		$function = $this->_wrap(function () use ($installer) {
+			return $installer->run();
 		});
 
-		$function();
+		$result = $function();
+
+		if ($result !== 0) {
+			throw new Exception\ComposerException('Composer update failed: ' . $this->_io->getLastError());
+		}
 
 		return $this;
 	}
@@ -119,23 +106,19 @@ class Up
 	 */
 	public function install()
 	{
-		$composer = $this->createComposer();
-		$io = $this->_io;
+		$installer = $this->_getInstaller(false);
 
-		$function = $this->_wrap(function () use ($composer, $io) {
-			$install = Installer::create($io, $composer);
+		$function = $this->_wrap(function () use ($installer) {
+			$result = $installer->run();
 
-			$this->_setInstallerOptions($install);
-			$install->setUpdate(false);
-
-			$result = $install->run();
-
-			if ($result !== 0) {
-				throw new Exception\ComposerException('Composer install failed: ' . $io->getLastError());
-			}
+			return $result;
 		});
 
-		$function();
+		$result = $function();
+
+		if ($result !== 0) {
+			throw new Exception\ComposerException('Composer install failed: ' . $this->_io->getLastError());
+		}
 
 		return $this;
 	}
@@ -149,24 +132,26 @@ class Up
 	 */
 	public function createProject($package)
 	{
-		$io   = $this->_io;
-		$root = $this->_root;
+		$io               = $this->_io;
+		$root             = $this->_root;
+		$factory          = $this->_factory;
+		$installerOptions = $this->_installerOptions;
 
-		$function = $this->_wrap(function () use ($package, $io, $root) {
+		$function = $this->_wrap(function () use ($package, $io, $root, $factory, $installerOptions) {
 			$projectCreator = new CreateProjectCommand;
 
 			$input = new SymfonyInput([
-				'--prefer-source' => $this->_installerOptions['prefer-source'],
-				'--prefer-dist' => $this->_installerOptions['prefer-dist'],
+				'--prefer-source' => $installerOptions['prefer-source'],
+				'--prefer-dist' => $installerOptions['prefer-dist'],
 			],
 				$projectCreator->getDefinition()
 			);
 
-			$result = $projectCreator->installProject(
-				$this->_io,
-				$this->_factory->createConfig($io, $root),
+			return $projectCreator->installProject(
+				$io,
+				$factory->createConfig($io, $root),
 				$package,
-				$this->_root,
+				$root,
 				null,
 				'stable',
 				false,
@@ -181,13 +166,13 @@ class Up
 				false,
 				$input
 			);
-
-			if ($result !== 0) {
-				throw new Exception\ComposerException('Composer failed to create project ' . $package . ': ' . $io->getLastError());
-			}
 		});
 
-		$function();
+		$result = $function();
+
+		if ($result !== 0) {
+			throw new Exception\ComposerException('Composer failed to create project ' . $package . ': ' . $io->getLastError());
+		}
 
 		return $this;
 	}
@@ -228,14 +213,16 @@ class Up
 	 * Wrap a function with a memory_limit check. Set to 1G if below, and then reset after the function has been
 	 * called. Returns a new closure so will still need to be run manually.
 	 *
-	 * @param \Closure $function
+	 * @param \Closure $function    The closure that will be wrapped
 	 *
-	 * @return \Closure
+	 * @return \Closure             Returns closure that runs the initial closure. The returned closure returns the same
+	 *                              value that the passed closure returns.
 	 */
 	private function _wrap(\Closure $function)
 	{
 		return function () use ($function) {
 			$memory = ini_get('memory_limit');
+
 			switch (substr($memory, -1)) {
 				case 'M':
 				case 'm':
@@ -253,15 +240,34 @@ class Up
 					$memory = (int) $memory;
 					break;
 			}
-			if ($memory < 1073741824) {
+
+			if ($memory < 1073741824 && $memory >= -1) {
 				$iniSet = ini_set('memory_limit', 1073741824);
 			}
 
-			$function();
+			$result = $function();
 
 			if (isset($iniSet)) {
 				ini_set('memory_limit', $iniSet);
 			}
+
+			return $result;
 		};
+	}
+
+	/**
+	 * Get a new instance of the Composer installer
+	 *
+	 * @param bool $update     Set to true for update and false for install
+	 *
+	 * @return Installer
+	 */
+	private function _getInstaller($update)
+	{
+		$installer = Installer::create($this->_io, $this->createComposer());
+		$this->_setInstallerOptions($installer);
+		$installer->setUpdate((bool) $update);
+
+		return $installer;
 	}
 }
