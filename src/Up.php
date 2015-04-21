@@ -93,17 +93,23 @@ class Up
 	 */
 	public function update()
 	{
-		$this->_composer = $this->createComposer();
-		$install = Installer::create($this->_io, $this->_composer);
-		
-		$this->_setInstallerOptions($install);
-		$install->setUpdate(true);
+		$composer = $this->createComposer();
+		$io = $this->_io;
 
-		$result = $install->run();
+		$function = $this->_wrap(function () use ($composer, $io) {
+			$install = Installer::create($io, $composer);
 
-		if ($result !== 0) {
-			throw new Exception\ComposerException('Composer update failed: ' . $this->_io->getLastError());
-		}
+			$this->_setInstallerOptions($install);
+			$install->setUpdate(true);
+
+			$result = $install->run();
+
+			if ($result !== 0) {
+				throw new Exception\ComposerException('Composer update failed: ' . $this->_io->getLastError());
+			}
+		});
+
+		$function();
 
 		return $this;
 	}
@@ -113,17 +119,23 @@ class Up
 	 */
 	public function install()
 	{
-		$this->_composer = $this->createComposer();
-		$install = Installer::create($this->_io, $this->_composer);
-		
-		$this->_setInstallerOptions($install);
-		$install->setUpdate(false);
+		$composer = $this->createComposer();
+		$io = $this->_io;
 
-		$result = $install->run();
+		$function = $this->_wrap(function () use ($composer, $io) {
+			$install = Installer::create($io, $composer);
 
-		if ($result !== 0) {
-			throw new Exception\ComposerException('Composer install failed: ' . $this->_io->getLastError());
-		}
+			$this->_setInstallerOptions($install);
+			$install->setUpdate(false);
+
+			$result = $install->run();
+
+			if ($result !== 0) {
+				throw new Exception\ComposerException('Composer install failed: ' . $io->getLastError());
+			}
+		});
+
+		$function();
 
 		return $this;
 	}
@@ -137,38 +149,45 @@ class Up
 	 */
 	public function createProject($package)
 	{
-		$projectCreator = new CreateProjectCommand;
+		$io   = $this->_io;
+		$root = $this->_root;
 
-		$input = new SymfonyInput([
+		$function = $this->_wrap(function () use ($package, $io, $root) {
+			$projectCreator = new CreateProjectCommand;
+
+			$input = new SymfonyInput([
 				'--prefer-source' => $this->_installerOptions['prefer-source'],
-				'--prefer-dist'   => $this->_installerOptions['prefer-dist'],
+				'--prefer-dist' => $this->_installerOptions['prefer-dist'],
 			],
-			$projectCreator->getDefinition()
-		);
+				$projectCreator->getDefinition()
+			);
 
-		$result = $projectCreator->installProject(
-			$this->_io,
-			$this->_factory->createConfig($this->_io, $this->_root),
-			$package,
-			$this->_root,
-			null,
-			'stable',
-			false,
-			false,
-			false,
-			null,
-			false,
-			false,
-			false,
-			false,
-			false,
-			false,
-			$input
-		);
+			$result = $projectCreator->installProject(
+				$this->_io,
+				$this->_factory->createConfig($io, $root),
+				$package,
+				$this->_root,
+				null,
+				'stable',
+				false,
+				false,
+				false,
+				null,
+				false,
+				false,
+				false,
+				false,
+				false,
+				false,
+				$input
+			);
 
-		if ($result !== 0) {
-			throw new Exception\ComposerException('Composer failed to create project ' . $package . ': ' . $this->_io->getLastError());
-		}
+			if ($result !== 0) {
+				throw new Exception\ComposerException('Composer failed to create project ' . $package . ': ' . $io->getLastError());
+			}
+		});
+
+		$function();
 
 		return $this;
 	}
@@ -203,5 +222,46 @@ class Up
 			->setPreferStable($this->_installerOptions['prefer-stable'])
 			->setPreferLowest($this->_installerOptions['prefer-lowest'])
 		;
+	}
+
+	/**
+	 * Wrap a function with a memory_limit check. Set to 1G if below, and then reset after the function has been
+	 * called. Returns a new closure so will still need to be run manually.
+	 *
+	 * @param \Closure $function
+	 *
+	 * @return \Closure
+	 */
+	private function _wrap(\Closure $function)
+	{
+		return function () use ($function) {
+			$memory = ini_get('memory_limit');
+			switch (substr($memory, -1)) {
+				case 'M':
+				case 'm':
+					$memory = (int) $memory * 1048576;
+					break;
+				case 'K':
+				case 'k':
+					$memory = (int) $memory * 1024;
+					break;
+				case 'G':
+				case 'g':
+					$memory = (int) $memory * 1073741824;
+					break;
+				default:
+					$memory = (int) $memory;
+					break;
+			}
+			if ($memory < 1073741824) {
+				$iniSet = ini_set('memory_limit', 1073741824);
+			}
+
+			$function();
+
+			if (isset($iniSet)) {
+				ini_set('memory_limit', $iniSet);
+			}
+		};
 	}
 }
