@@ -132,8 +132,8 @@ class Up
 	 */
 	public function createProject($package)
 	{
-		if(!is_string($package) {
-			throw new \InvalidArgumentException('Package must be of type string'));
+		if (!is_string($package)) {
+			throw new \InvalidArgumentException('Package must be of type string');
 		}
 
 		$io               = $this->_io;
