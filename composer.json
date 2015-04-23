@@ -18,6 +18,7 @@
 	"issues": "http://github.com/mothership-ec/up/issues"
   },
   "require": {
+  	"php": ">=5.4",
 	"mothership-ec/composer": "~1.0"
   },
   "require-dev": {
