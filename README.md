@@ -46,4 +46,5 @@
 
 ## Caveats
 
-**Up!** currently uses <a href="http://github.com/mothership-ec/composer">a forked version of Composer</a> as Composer itself does not utilise semantic versioning
++ **Up!** currently uses <a href="http://github.com/mothership-ec/composer">a forked version of Composer</a> as Composer itself does not utilise semantic versioning
++ **Up!** should be used responsibly. Since it sits on top of Composer's code base, it is only as secure as Composer is, and any security issues with Composer apply to **Up!** as well. On top of this, **Up!** is meant to be used as a tool, and it is not the responsibility of the library to ensure that you do not break your application by allowing automatic updates. By using Composer and/or **Up!**, you are putting your faith into the libraries you use that they will respect semantic versioning and not introduce backwards compatibility breaking changes in their minor updates or hotfixes.
