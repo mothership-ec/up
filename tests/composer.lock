@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/composer.git",
-                "reference": "a32c91914558a3ff293d83f7b99c49f4a7931798"
+                "reference": "2e73811211b7ea6de8de578fa50746fe679f2297"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/composer/zipball/a32c91914558a3ff293d83f7b99c49f4a7931798",
-                "reference": "a32c91914558a3ff293d83f7b99c49f4a7931798",
+                "url": "https://api.github.com/repos/composer/composer/zipball/2e73811211b7ea6de8de578fa50746fe679f2297",
+                "reference": "2e73811211b7ea6de8de578fa50746fe679f2297",
                 "shasum": ""
             },
             "require": {
@@ -72,7 +72,7 @@
                 "dependency",
                 "package"
             ],
-            "time": "2015-04-18 18:11:12"
+            "time": "2015-04-21 20:02:17"
         },
         {
             "name": "justinrainbow/json-schema",
