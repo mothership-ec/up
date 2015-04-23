@@ -75,6 +75,24 @@ class UpTest extends \PHPUnit_Framework_TestCase
 	}
 
 	/**
+	 * @expectedException \InvalidArgumentException
+	 */
+	public function testCreateProjectThrows()
+	{
+		$projectRoot = __DIR__ . '/testproject';
+		mkdir($projectRoot);
+		$oldDir = getcwd();
+		chdir($projectRoot);
+
+		$up = new Up;
+
+		$result = $up
+			->setBaseDir($projectRoot . '/mothership')
+			->createProject(null)
+		;
+	}
+
+	/**
 	 * Recursively remove a directory - used to remove vendor
 	 */
 	private function rrmdir($dir) { 
