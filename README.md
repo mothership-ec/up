@@ -1,5 +1,7 @@
 # Up!
 
+[![Build Status](https://travis-ci.org/mothership-ec/up.svg?branch=develop)](https://travis-ci.org/mothership-ec/up)
+
 **Up!** is a simple library for running <a href="http://getcomposer.org">Composer</a> commands from within your application.
 
 **Up!** works by extending Composer's internal library and adding some simple methods which handle most of the configuration and setup for you.
