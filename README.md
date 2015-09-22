@@ -1,5 +1,7 @@
 # Up!
 
+[![Join the chat at https://gitter.im/mothership-ec/up](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mothership-ec/up?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Build Status](https://travis-ci.org/mothership-ec/up.svg?branch=develop)](https://travis-ci.org/mothership-ec/up)
 
 **Up!** is a simple library for running <a href="http://getcomposer.org">Composer</a> commands from within your application.
